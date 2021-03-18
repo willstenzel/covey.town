@@ -116,6 +116,28 @@ export default class CoveyTownController {
   }
 
   /**
+   * Adds a player to the current Covey Town queue and 
+   * returns to them their current position in the queue 
+   *
+   * @param  playerID The ID of the new player being added to the queue
+   */
+  addPlayerToQueue(playerID: string): number {
+    // Find the player by ID
+    const player = this._players.find(player => player.id === playerID)
+    if (!player) {
+      throw new Error('Player ID is invalid');
+    }
+    // Check that the player does not already exist in the queue 
+    if (this._queue.isPlayerInQueue(player)) {
+      throw new Error('Player is already in the queue');
+    }
+    // Add the player to the queue
+    this._queue.push(player);
+    
+    return this._queue.getPlayerPosition(player);
+  }
+
+  /**
    * Destroys all data related to a player in this town.
    *
    * @param session PlayerSession to destroy

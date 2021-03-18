@@ -80,11 +80,19 @@ export interface TownUpdateRequest {
 }
 
 /**
- * Payload sent by the client who joins the queue
- * Returns the place that the user is in the queue
+ * Payload sent by the client who is requesting to join the queue
+ */
+export interface QueueJoinRequest {
+  playerID: string;
+  coveyTownID: string;
+}
+
+/**
+ * Payload sent to the client who joins the queue
+ * Returns the position that the user is in the queue
  */
 export interface QueueJoinResponse {
-  queuePosition: number
+  queuePosition: number;
 }
 
 /**
@@ -177,20 +185,21 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
-// TODO: Create a new join queue handler which will:
-// 1. Adds the user to the queue object
-// 2. Send back a message that includes thier position in the queue
-
-export async function joinQueue(requestData): Promise<ResponseEnvelope<QueueJoinResponse>> {
-  // get the covey contoller
-  // modify it's queue object to add a player to the queue
-  // return that plyers position
-
-  // example response 
+export async function joinQueue(requestData: QueueJoinRequest): Promise<ResponseEnvelope<QueueJoinResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
+  if (!coveyTownController) {
+    return {
+      isOK: false,
+      message: 'Error: No such town',
+    };
+  }
+  
+  const queuePosition = coveyTownController.addPlayerToQueue(requestData.playerID)
   return {
     isOK: true,
     response: {
-      queuePosition: 4
+      queuePosition
     },
   }; 
 }
