@@ -98,6 +98,11 @@ export default class CoveyTownController {
   async addPlayer(newPlayer: Player): Promise<PlayerSession> {
     const theSession = new PlayerSession(newPlayer);
 
+    // Set player as adminPlayer if they are the first player joining the room
+    if (this._players.length === 0) {
+      this.setAdmin(newPlayer);
+    }
+
     this._sessions.push(theSession);
     this._players.push(newPlayer);
 
