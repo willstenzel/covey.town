@@ -80,6 +80,14 @@ export interface TownUpdateRequest {
 }
 
 /**
+ * Payload sent by the client who joins the queue
+ * Returns the place that the user is in the queue
+ */
+export interface QueueJoinResponse {
+  queuePosition: number
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -169,6 +177,61 @@ export async function townUpdateHandler(requestData: TownUpdateRequest): Promise
 
 }
 
+// TODO: Create a new join queue handler which will:
+// 1. Adds the user to the queue object
+// 2. Send back a message that includes thier position in the queue
+
+export async function joinQueue(requestData): Promise<ResponseEnvelope<QueueJoinResponse>> {
+  // get the covey contoller
+  // modify it's queue object to add a player to the queue
+  // return that plyers position
+
+  // example response 
+  return {
+    isOK: true,
+    response: {
+      queuePosition: 4
+    },
+  }; 
+}
+
+
+export async function helpStudent(requestData): Promise<ResponseEnvelope<Record<string, null>>> {
+  // 1. Pop the first student off the top of the queue
+  //    - get the queue object from the towner controller
+  //    - pop the student from the queue object
+
+  // 2. Create new world which we'll send to them
+  //    - generate a new world, with a returnTo attribute
+  //      e.g. await townsStore.createTown("Private Room" + student name + ta name, false, returnTo: currentRoomID);
+  
+  // 3. Update everyone with thier updated position
+  //    - call updateQueuePositions
+
+  // 4. Call the redirect room websocket function to tell the TA and student to join the new room 
+
+  // ON THE FRONT END:
+  //    - Disconnect them from the current town
+  //    - Add the student and TA to that town
+
+  const success = true;
+  const erroMessage = "Error: [explain the error]"
+  // example response 
+  return {
+    isOK: true,
+    response: {},
+    message: !success ? erroMessage : undefined,
+  }; 
+}
+
+export async function finishHelping(request): Promise<ResponseEnvelope<Record<string, null>>> {
+  // 1. Sends a redirect message via websockets to the two poeple in the room
+  //    - This tells them to disccoect form the current room
+  //    - And join back to the room which is in the retrunTo attribute of the town
+
+  // 2. Destroy the room 
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -190,6 +253,8 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
+    // TODO: onRedirectRoom
+    // TODO: onUpdatePlayerPosition
   };
 }
 

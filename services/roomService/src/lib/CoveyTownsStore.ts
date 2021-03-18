@@ -64,6 +64,9 @@ export default class CoveyTownsStore {
     const existingTown = this.getControllerForTown(coveyTownID);
     if (existingTown && passwordMatches(coveyTownPassword, existingTown.townUpdatePassword)) {
       this._towns = this._towns.filter(town => town !== existingTown);
+      // if (room.returnTo) {
+        // redirect the player to the return to room
+      // }
       existingTown.disconnectAllPlayers();
       return true;
     }
