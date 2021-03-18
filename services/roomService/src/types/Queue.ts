@@ -46,5 +46,15 @@ export default class Queue {
     }
     throw new Error('The given player is not in the Queue!')
   }
+
+  /** Checks if a given player is in the queue */
+  isPlayerInQueue(player: Player): boolean {
+    try {
+      const position = this.getPlayerPosition(player);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   
 }
