@@ -5,7 +5,7 @@ import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
-import { QueueContext } from 'twilio/lib/rest/api/v2010/account/queue';
+import Queue from '../types/Queue';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -49,6 +49,9 @@ export default class CoveyTownController {
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
+  /** Admin Player that controls the processing of the Queue */
+  private adminPlayer: Player;
+
   /** The list of valid sessions for this town * */
   private _sessions: PlayerSession[] = [];
 
@@ -68,18 +71,12 @@ export default class CoveyTownController {
 
   // returnTo: covy room id
 
-  // private _queue: Queue
-
-  // Queue class implements:
-  // - push(Player)
-  // - pop()
-  // - getPlayerPosition(player)
-
-  // roomAdmin: Player
+  private _queue: Queue;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = friendlyNanoID();
     this._townUpdatePassword = nanoid(24);
+    this._queue = new Queue();
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
     // when the room gets created we add the first user as the admin of the room
