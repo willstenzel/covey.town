@@ -14,6 +14,9 @@ const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
  * can occur (e.g. joining a town, moving, leaving a town)
  */
 export default class CoveyTownController {
+  get capacity(): number {
+    return this._capacity;
+  }
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -72,9 +75,12 @@ export default class CoveyTownController {
   // returnTo: covy room id
 
   private _queue: Queue;
+  
+  private _capacity: number;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
-    this._coveyTownID = friendlyNanoID();
+    this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
+    this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._queue = new Queue();
     this._isPubliclyListed = isPubliclyListed;
