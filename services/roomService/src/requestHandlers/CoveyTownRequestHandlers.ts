@@ -205,41 +205,41 @@ export async function joinQueue(requestData: QueueJoinRequest): Promise<Response
 }
 
 
-export async function helpStudent(requestData): Promise<ResponseEnvelope<Record<string, null>>> {
-  // 1. Pop the first student off the top of the queue
-  //    - get the queue object from the towner controller
-  //    - pop the student from the queue object
+// export async function helpStudent(requestData): Promise<ResponseEnvelope<Record<string, null>>> {
+//   // 1. Pop the first student off the top of the queue
+//   //    - get the queue object from the towner controller
+//   //    - pop the student from the queue object
 
-  // 2. Create new world which we'll send to them
-  //    - generate a new world, with a returnTo attribute
-  //      e.g. await townsStore.createTown("Private Room" + student name + ta name, false, returnTo: currentRoomID);
+//   // 2. Create new world which we'll send to them
+//   //    - generate a new world, with a returnTo attribute
+//   //      e.g. await townsStore.createTown("Private Room" + student name + ta name, false, returnTo: currentRoomID);
   
-  // 3. Update everyone with thier updated position
-  //    - call updateQueuePositions
+//   // 3. Update everyone with thier updated position
+//   //    - call updateQueuePositions
 
-  // 4. Call the redirect room websocket function to tell the TA and student to join the new room 
+//   // 4. Call the redirect room websocket function to tell the TA and student to join the new room 
 
-  // ON THE FRONT END:
-  //    - Disconnect them from the current town
-  //    - Add the student and TA to that town
+//   // ON THE FRONT END:
+//   //    - Disconnect them from the current town
+//   //    - Add the student and TA to that town
 
-  const success = true;
-  const erroMessage = "Error: [explain the error]"
-  // example response 
-  return {
-    isOK: true,
-    response: {},
-    message: !success ? erroMessage : undefined,
-  }; 
-}
+//   const success = true;
+//   const erroMessage = "Error: [explain the error]"
+//   // example response 
+//   return {
+//     isOK: true,
+//     response: {},
+//     message: !success ? erroMessage : undefined,
+//   }; 
+// }
 
-export async function finishHelping(request): Promise<ResponseEnvelope<Record<string, null>>> {
-  // 1. Sends a redirect message via websockets to the two poeple in the room
-  //    - This tells them to disccoect form the current room
-  //    - And join back to the room which is in the retrunTo attribute of the town
+// export async function finishHelping(request): Promise<ResponseEnvelope<Record<string, null>>> {
+//   // 1. Sends a redirect message via websockets to the two poeple in the room
+//   //    - This tells them to disccoect form the current room
+//   //    - And join back to the room which is in the retrunTo attribute of the town
 
-  // 2. Destroy the room 
-}
+//   // 2. Destroy the room 
+// }
 
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)

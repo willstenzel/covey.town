@@ -53,7 +53,7 @@ export default class CoveyTownController {
   private _players: Player[] = [];
 
   /** Admin Player that controls the processing of the Queue */
-  private _adminPlayer: Player;
+  private _adminPlayer: Player | undefined;
 
   /** The list of valid sessions for this town * */
   private _sessions: PlayerSession[] = [];
@@ -88,11 +88,10 @@ export default class CoveyTownController {
     // when the room gets created we add the first user as the admin of the room
   }
 
-  setAdmin(adminPlayer: Player): void {
-    if (this._adminPlayer) {
-      throw new Error('An admin for this room already exists!');
-    }
-    this._adminPlayer = adminPlayer;
+  set adminPlayer(adminPlayer: Player) {
+    if (!this._adminPlayer) {
+      this._adminPlayer = adminPlayer;
+    } 
   }
 
   /**
@@ -106,7 +105,7 @@ export default class CoveyTownController {
 
     // Set player as adminPlayer if they are the first player joining the room
     if (this._players.length === 0) {
-      this.setAdmin(newPlayer);
+      this.adminPlayer = newPlayer;
     }
 
     this._sessions.push(theSession);

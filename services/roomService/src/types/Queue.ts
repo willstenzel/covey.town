@@ -1,4 +1,4 @@
-import Player from "./Player";
+import Player from './Player';
 
 /**
  * The object associated with a player in the Queue
@@ -14,7 +14,7 @@ export interface QueueTicket {
 export default class Queue {
 
   /** Our queue of players */
-  private _playerQueue: QueueTicket[] = []
+  private _playerQueue: QueueTicket[] = [];
 
   /**
    * Adds the given player to the Queue
@@ -22,8 +22,8 @@ export default class Queue {
    * @param player 
    */
   push(player: Player): void {
-    const timestamp = new Date()
-    this._playerQueue.push({ player, timestamp })
+    const timestamp = new Date();
+    this._playerQueue.push({ player, timestamp });
   }
 
   /**
@@ -34,17 +34,17 @@ export default class Queue {
     if (!poppedQueueTicket) {
       throw new Error('The current Queue is empty!');
     }
-    return poppedQueueTicket
+    return poppedQueueTicket;
   }
 
   /** Gets the Queue position of the given player */
   getPlayerPosition(player: Player): number {
     for (const queueTicket of this._playerQueue) {
       if (player.id === queueTicket.player.id) {
-        return this._playerQueue.indexOf(queueTicket) + 1
+        return this._playerQueue.indexOf(queueTicket) + 1;
       }
     }
-    throw new Error('The given player is not in the Queue!')
+    throw new Error('The given player is not in the Queue!');
   }
 
   /** Checks if a given player is in the queue */

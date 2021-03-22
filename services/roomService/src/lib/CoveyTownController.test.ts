@@ -192,7 +192,7 @@ describe('CoveyTownController', () => {
           townSubscriptionHandler(mockSocket);
 
           // find the 'disconnect' event handler for the socket, which should have been registered after the socket was connected
-          const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect');
+          const disconnectHandler = mockSocket.on.mock.calls.find((call: any) => call[0] === 'disconnect');
           if (disconnectHandler && disconnectHandler[1]) {
             disconnectHandler[1]();
             const newPlayer = new Player('should not be notified');
@@ -207,7 +207,7 @@ describe('CoveyTownController', () => {
           townSubscriptionHandler(mockSocket);
 
           // find the 'disconnect' event handler for the socket, which should have been registered after the socket was connected
-          const disconnectHandler = mockSocket.on.mock.calls.find(call => call[0] === 'disconnect');
+          const disconnectHandler = mockSocket.on.mock.calls.find((call: any) => call[0] === 'disconnect');
           if (disconnectHandler && disconnectHandler[1]) {
             disconnectHandler[1]();
             mockReset(mockSocket);
@@ -226,7 +226,7 @@ describe('CoveyTownController', () => {
         const mockListener = mock<CoveyTownListener>();
         testingTown.addTownListener(mockListener);
         // find the 'playerMovement' event handler for the socket, which should have been registered after the socket was connected
-        const playerMovementHandler = mockSocket.on.mock.calls.find(call => call[0] === 'playerMovement');
+        const playerMovementHandler = mockSocket.on.mock.calls.find((call: any) => call[0] === 'playerMovement');
         if (playerMovementHandler && playerMovementHandler[1]) {
           const newLocation = generateTestLocation();
           player.location = newLocation;
