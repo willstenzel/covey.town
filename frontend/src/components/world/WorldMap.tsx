@@ -33,10 +33,13 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
+  //private apiClient;
+
   constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
+    this.apiClient = useCoveyAppState();
   }
 
   preload() {
@@ -240,6 +243,10 @@ class CoveyGameScene extends Phaser.Scene {
       { name: 'transporter' })
     this.physics.world.enable(transporters);
 
+    const queueMachines = map.createFromObjects('Objects',
+      { name: 'Queue Machine' })
+    this.physics.world.enable(queueMachines);
+
     // For each of the transporters (rectangle objects), we need to tweak their location on the scene
     // for reasons that are not obvious to me, but this seems to work. We also set them to be invisible
     // but for debugging, you can comment out that line.
@@ -250,6 +257,14 @@ class CoveyGameScene extends Phaser.Scene {
                                   // the map
       }
     );
+
+    queueMachines.forEach(queueMachine => {
+      const sprite = queueMachine as Phaser.GameObjects.Sprite;
+      sprite.y += 2 * sprite.height; // Phaser and Tiled seem to disagree on which corner is y
+      sprite.setVisible(false); // Comment this out to see the transporter rectangles drawn on
+                                // the map
+    }
+  );
 
     const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
     labels.forEach(label => {
@@ -322,6 +337,14 @@ class CoveyGameScene extends Phaser.Scene {
         else{
           throw new Error(`Unable to find target object ${target}`);
         }
+      }
+    })
+
+    this.physics.add.overlap(sprite, queueMachines,
+      (overlappingObject, queueMachine)=>{
+      if(cursorKeys.space.isDown && this.player){
+        
+        //this.apiClient.joinQueue(this.video.coveyTownID, this.id)
       }
     })
 

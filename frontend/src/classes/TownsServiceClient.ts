@@ -77,6 +77,22 @@ export interface TownUpdateRequest {
 }
 
 /**
+ * Payload sent by the client who is requesting to join the queue
+ */
+export interface QueueJoinRequest {
+  playerID: string;
+  coveyTownID: string;
+}
+
+/**
+ * Payload sent to the client who joins the queue
+ * Returns the position that the user is in the queue
+ */
+export interface QueueJoinResponse {
+  queuePosition: number;
+}
+
+/**
  * Envelope that wraps any response from the server
  */
 export interface ResponseEnvelope<T> {
@@ -139,6 +155,11 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async joinQueue(requestJoinQueue: QueueJoinRequest): Promise<QueueJoinResponse> {
+    const responseWrapper = await this._axios.post('/queues', requestJoinQueue);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

@@ -9,6 +9,7 @@ import {
   townListHandler,
   townSubscriptionHandler,
   townUpdateHandler,
+  joinQueueHandler,
 } from '../requestHandlers/CoveyTownRequestHandlers';
 import { logError } from '../Utils';
 
@@ -96,6 +97,26 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
         isPubliclyListed: req.body.isPubliclyListed,
         friendlyName: req.body.friendlyName,
         coveyTownPassword: req.body.coveyTownPassword,
+      });
+      res.status(StatusCodes.OK)
+        .json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({
+          message: 'Internal server error, please see log in server for more details',
+        });
+    }
+  });
+
+  /**
+   * Join a queue
+   */
+  app.post('/queues', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await joinQueueHandler({
+        playerID: req.params.playerID,
+        coveyTownID: req.params.townID,
       });
       res.status(StatusCodes.OK)
         .json(result);
