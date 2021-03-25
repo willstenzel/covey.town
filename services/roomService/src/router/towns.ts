@@ -105,7 +105,6 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
    */
   app.post('/queues', BodyParser.json(), async (req, res) => {
     try {
-      console.log('REQUEST', req.body);
       const result = await joinQueueHandler({
         playerID: req.body.playerID,
         coveyTownID: req.body.coveyTownID,
