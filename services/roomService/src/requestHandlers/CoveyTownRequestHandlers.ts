@@ -204,7 +204,6 @@ export async function townUpdateHandler(
 export async function joinQueueHandler(
   requestData: QueueJoinRequest,
 ): Promise<ResponseEnvelope<QueueJoinResponse>> {
-  console.log('HANDLER REQUEST DATA', requestData);
   const townsStore = CoveyTownsStore.getInstance();
   const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
   if (!coveyTownController) {
