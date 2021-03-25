@@ -9,8 +9,8 @@ export type ServerPlayer = { _id: string, _userName: string, location: UserLocat
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
  */
 export interface TownJoinRequest {
-  /** userName of the player that would like to join * */
-  userName: string;
+  /** userID of the player that would like to join * */
+  userID: string;
   /** ID of the town that the player would like to join * */
   coveyTownID: string;
 }

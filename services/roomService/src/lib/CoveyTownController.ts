@@ -3,9 +3,9 @@ import { UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
-import TwilioVideo from './TwilioVideo';
-import IVideoClient from './IVideoClient';
 import Queue from '../types/Queue';
+import IVideoClient from './IVideoClient';
+import TwilioVideo from './TwilioVideo';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -17,6 +17,7 @@ export default class CoveyTownController {
   get capacity(): number {
     return this._capacity;
   }
+
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -75,11 +76,11 @@ export default class CoveyTownController {
   // returnTo: covy room id
 
   private _queue: Queue;
-  
+
   private _capacity: number;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
-    this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
+    this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._queue = new Queue();
@@ -91,7 +92,7 @@ export default class CoveyTownController {
   set adminPlayer(adminPlayer: Player) {
     if (!this._adminPlayer) {
       this._adminPlayer = adminPlayer;
-    } 
+    }
   }
 
   /**
@@ -112,33 +113,36 @@ export default class CoveyTownController {
     this._players.push(newPlayer);
 
     // Create a video token for this user to join this town
-    theSession.videoToken = await this._videoClient.getTokenForTown(this._coveyTownID, newPlayer.id);
+    theSession.videoToken = await this._videoClient.getTokenForTown(
+      this._coveyTownID,
+      newPlayer.id,
+    );
 
     // Notify other players that this player has joined
-    this._listeners.forEach((listener) => listener.onPlayerJoined(newPlayer));
+    this._listeners.forEach(listener => listener.onPlayerJoined(newPlayer));
 
     return theSession;
   }
 
   /**
-   * Adds a player to the current Covey Town queue and 
-   * returns to them their current position in the queue 
+   * Adds a player to the current Covey Town queue and
+   * returns to them their current position in the queue
    *
    * @param  playerID The ID of the new player being added to the queue
    */
   addPlayerToQueue(playerID: string): number {
     // Find the player by ID
-    const player = this._players.find(player => player.id === playerID)
+    const player = this._players.find(p => p.id === playerID);
     if (!player) {
       throw new Error('Player ID is invalid');
     }
-    // Check that the player does not already exist in the queue 
+    // Check that the player does not already exist in the queue
     if (this._queue.isPlayerInQueue(player)) {
       throw new Error('Player is already in the queue');
     }
     // Add the player to the queue
     this._queue.push(player);
-    
+
     return this._queue.getPlayerPosition(player);
   }
 
@@ -148,9 +152,9 @@ export default class CoveyTownController {
    * @param session PlayerSession to destroy
    */
   destroySession(session: PlayerSession): void {
-    this._players = this._players.filter((p) => p.id !== session.player.id);
-    this._sessions = this._sessions.filter((s) => s.sessionToken !== session.sessionToken);
-    this._listeners.forEach((listener) => listener.onPlayerDisconnected(session.player));
+    this._players = this._players.filter(p => p.id !== session.player.id);
+    this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
+    this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
   }
 
   /**
@@ -160,7 +164,7 @@ export default class CoveyTownController {
    */
   updatePlayerLocation(player: Player, location: UserLocation): void {
     player.updateLocation(location);
-    this._listeners.forEach((listener) => listener.onPlayerMoved(player));
+    this._listeners.forEach(listener => listener.onPlayerMoved(player));
   }
 
   /**
@@ -180,7 +184,7 @@ export default class CoveyTownController {
    * with addTownListener, or otherwise will be a no-op
    */
   removeTownListener(listener: CoveyTownListener): void {
-    this._listeners = this._listeners.filter((v) => v !== listener);
+    this._listeners = this._listeners.filter(v => v !== listener);
   }
 
   /**
@@ -190,10 +194,10 @@ export default class CoveyTownController {
    * @param token
    */
   getSessionByToken(token: string): PlayerSession | undefined {
-    return this._sessions.find((p) => p.sessionToken === token);
+    return this._sessions.find(p => p.sessionToken === token);
   }
 
   disconnectAllPlayers(): void {
-    this._listeners.forEach((listener) => listener.onTownDestroyed());
+    this._listeners.forEach(listener => listener.onTownDestroyed());
   }
 }

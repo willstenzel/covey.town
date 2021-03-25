@@ -159,8 +159,7 @@ export default class TownsServiceClient {
   }
 
   async joinQueue(requestJoinQueue: QueueJoinRequest): Promise<QueueJoinResponse> {
-    const responseWrapper = await this._axios.post('/queues', requestJoinQueue);
+    const responseWrapper = await this._axios.post<ResponseEnvelope<QueueJoinResponse>>('/queues', requestJoinQueue);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
-
 }

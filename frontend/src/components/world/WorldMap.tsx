@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Phaser from 'phaser';
+import { useToast } from '@chakra-ui/react';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -33,13 +34,13 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  //private apiClient;
+  private handleJoinQueue;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, handleJoinQueue: () => Promise<void>) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
-    this.apiClient = useCoveyAppState();
+    this.handleJoinQueue = handleJoinQueue;
   }
 
   preload() {
@@ -338,15 +339,17 @@ class CoveyGameScene extends Phaser.Scene {
           throw new Error(`Unable to find target object ${target}`);
         }
       }
-    })
+    });
 
+    /* Handle joining of the queue when a player goes to the queue machine
+    and presses the sapce bar 
+    */
     this.physics.add.overlap(sprite, queueMachines,
-      (overlappingObject, queueMachine)=>{
+      async (overlappingObject, queueMachine)=>{
       if(cursorKeys.space.isDown && this.player){
-        
-        //this.apiClient.joinQueue(this.video.coveyTownID, this.id)
+        await this.handleJoinQueue();
       }
-    })
+    });
 
     this.emitMovement({
       rotation: 'front',
@@ -452,9 +455,27 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players,
+    emitMovement, players, myPlayerID, currentTownID, apiClient
   } = useCoveyAppState();
+  const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
+  
+  const handleJoinQueue = async () => {
+    try {
+      const res = await apiClient.joinQueue({ playerID: myPlayerID, coveyTownID: currentTownID });
+      toast({
+        title: 'Queue Join Sucessful!',
+        description: `You are in ${res.queuePosition} position in the queue`,
+        status: 'success',
+      });
+    } catch (e) {
+      toast({
+        title: 'Error joining the queue',
+        status: 'success',
+      });
+    }
+  };
+  
   useEffect(() => {
     const config = {
       type: Phaser.AUTO,
@@ -471,7 +492,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement);
+      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
