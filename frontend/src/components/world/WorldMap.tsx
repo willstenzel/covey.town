@@ -108,7 +108,7 @@ class CoveyGameScene extends Phaser.Scene {
           .sprite(0, 0, 'atlas', 'misa-front')
           .setSize(30, 40)
           .setOffset(0, 24);
-        const label = this.add.text(0, 0, myPlayer.userName, {
+        const label = this.add.text(0, 0, `${myPlayer.isTA ? '(TA) ' : ''}${myPlayer.userName}`, {
           font: '18px monospace',
           color: '#000000',
           backgroundColor: '#ffffff',
@@ -311,7 +311,7 @@ class CoveyGameScene extends Phaser.Scene {
       .setSize(30, 40)
       .setOffset(0, 24);
     
-    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, `${this.isTA} (You)`, {
+    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, `${this.isTA ? 'TA ' : ''}(You)`, {
       font: '18px monospace',
       color: '#000000',
       // padding: {x: 20, y: 10},
