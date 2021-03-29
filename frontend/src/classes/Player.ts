@@ -9,10 +9,13 @@ export default class Player {
 
   public label?: Phaser.GameObjects.Text;
 
-  constructor(id: string, userName: string, location: UserLocation) {
+  private _isTA: boolean;
+
+  constructor(id: string, userName: string, location: UserLocation, isTA: boolean) {
     this._id = id;
     this._userName = userName;
     this.location = location;
+    this._isTA = isTA;
   }
 
   get userName(): string {
@@ -23,11 +26,15 @@ export default class Player {
     return this._id;
   }
 
+  get isTA(): boolean {
+    return this._isTA;
+  }
+
   static fromServerPlayer(playerFromServer: ServerPlayer): Player {
-    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location);
+    return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location, playerFromServer._isTA);
   }
 }
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+export type ServerPlayer = { _id: string, _userName: string, location: UserLocation, _isTA: boolean };
 
 export type Direction = 'front'|'back'|'left'|'right';
 

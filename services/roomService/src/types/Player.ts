@@ -14,6 +14,9 @@ export default class Player {
   /** The player's username, which is not guaranteed to be unique within the town * */
   private readonly _userName: string;
 
+  /** The unique identifier for this player * */
+  private _isTA: boolean;
+
   constructor(userName: string) {
     this.location = {
       x: 0,
@@ -23,6 +26,7 @@ export default class Player {
     };
     this._userName = userName;
     this._id = nanoid();
+    this._isTA = false;
   }
 
   get userName(): string {
@@ -33,7 +37,15 @@ export default class Player {
     return this._id;
   }
 
+  get isTA(): boolean {
+    return this._isTA;
+  }
+
   updateLocation(location: UserLocation): void {
     this.location = location;
+  }
+
+  set isTA(isTA: boolean) {
+    this._isTA = isTA;
   }
 }

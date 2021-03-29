@@ -92,6 +92,7 @@ export default class CoveyTownController {
   set adminPlayer(adminPlayer: Player) {
     if (!this._adminPlayer) {
       this._adminPlayer = adminPlayer;
+      adminPlayer.isTA = true;
     }
   }
 

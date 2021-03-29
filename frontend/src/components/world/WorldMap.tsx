@@ -34,13 +34,19 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  private handleJoinQueue;
+  private handleJoinQueue: () => Promise<void>;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void, handleJoinQueue: () => Promise<void>) {
+  private spacebarPressed: boolean;
+
+  private isTA: boolean;
+
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, handleJoinQueue: () => Promise<void>, isTA: boolean) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
     this.handleJoinQueue = handleJoinQueue;
+    this.spacebarPressed = false;
+    this.isTA = isTA;
   }
 
   preload() {
@@ -90,7 +96,7 @@ class CoveyGameScene extends Phaser.Scene {
           y: 0,
         };
       }
-      myPlayer = new Player(player.id, player.userName, location);
+      myPlayer = new Player(player.id, player.userName, location, player.isTA);
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
@@ -304,7 +310,8 @@ class CoveyGameScene extends Phaser.Scene {
       .sprite(spawnPoint.x, spawnPoint.y, 'atlas', 'misa-front')
       .setSize(30, 40)
       .setOffset(0, 24);
-    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, '(You)', {
+    
+    const label = this.add.text(spawnPoint.x, spawnPoint.y - 20, `${this.isTA} (You)`, {
       font: '18px monospace',
       color: '#000000',
       // padding: {x: 20, y: 10},
@@ -346,8 +353,12 @@ class CoveyGameScene extends Phaser.Scene {
     */
     this.physics.add.overlap(sprite, queueMachines,
       async (overlappingObject, queueMachine)=>{
-      if(cursorKeys.space.isDown && this.player){
+      if(cursorKeys.space.isDown && this.player && !this.spacebarPressed){
+        this.spacebarPressed = true;
         await this.handleJoinQueue();
+      }
+      if(cursorKeys.space.isUp && this.player){
+        this.spacebarPressed = false;
       }
     });
 
@@ -419,7 +430,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Help text that has a "fixed" position on the screen
     this.add
-      .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
+      .text(16, 16, `Arrow keys to move, space to interact\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
         font: '18px monospace',
         color: '#000000',
         padding: {
@@ -459,6 +470,11 @@ export default function WorldMap(): JSX.Element {
   } = useCoveyAppState();
   const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
+  const TA = players.find(player => player.isTA)
+  let isTA = false;
+  if (TA){
+    isTA = TA.id === myPlayerID;
+  }
   
   const handleJoinQueue = async () => {
     try {
@@ -471,7 +487,7 @@ export default function WorldMap(): JSX.Element {
     } catch (e) {
       toast({
         title: 'Error joining the queue',
-        status: 'success',
+        status: 'error',
       });
     }
   };
@@ -492,7 +508,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue);
+      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue, isTA);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
