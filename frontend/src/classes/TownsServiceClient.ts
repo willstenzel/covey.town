@@ -84,12 +84,27 @@ export interface QueueJoinRequest {
   coveyTownID: string;
 }
 
+
 /**
  * Payload sent to the client who joins the queue
  * Returns the position that the user is in the queue
  */
 export interface QueueJoinResponse {
   queuePosition: number;
+}
+
+/**
+ * Payload sent by the client who is Helping the next student
+ */
+ export interface HelpStudentRequest {
+  coveyTownID: string;
+}
+
+/**
+ * Payload sent to the TA
+ */
+ export interface HelpStudentResponse {
+  helped: boolean;
 }
 
 /**
@@ -160,6 +175,11 @@ export default class TownsServiceClient {
 
   async joinQueue(requestJoinQueue: QueueJoinRequest): Promise<QueueJoinResponse> {
     const responseWrapper = await this._axios.post<ResponseEnvelope<QueueJoinResponse>>('/queues', requestJoinQueue);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async helpNextStudent(requestData: HelpStudentRequest): Promise<HelpStudentResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<HelpStudentResponse>>('/queues/help', requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 }

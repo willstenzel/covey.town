@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io-client';
 import Player, { UserLocation } from './classes/Player';
+import { QueueTicket } from './classes/Queue';
 import TownsServiceClient from './classes/TownsServiceClient';
 
 export type CoveyEvent = 'playerMoved' | 'playerAdded' | 'playerRemoved';
@@ -24,7 +25,7 @@ export type CoveyAppState = {
   myPlayerID: string,
   isTA: boolean,
   players: Player[],
-  queue: [],
+  queue: QueueTicket[],
   currentLocation: UserLocation,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,

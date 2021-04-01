@@ -1,4 +1,5 @@
 import Player from './Player';
+import { QueueTicket } from './Queue';
 
 /**
  * A listener for player-related events in each town
@@ -26,4 +27,9 @@ export default interface CoveyTownListener {
    * Called when a town is destroyed, causing all players to disconnect
    */
   onTownDestroyed(): void;
+
+  /**
+   * Called when the queue is updated, causing all players to move position
+   */
+  onQueueUpdated(queue: QueueTicket[]): void;
 }

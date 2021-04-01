@@ -4,6 +4,7 @@ import { Server } from 'http';
 import { StatusCodes } from 'http-status-codes';
 import io from 'socket.io';
 import {
+  helpNextStudentHandler,
   joinQueueHandler,
   townCreateHandler,
   townDeleteHandler,
@@ -107,6 +108,23 @@ export default function addTownRoutes(http: Server, app: Express): io.Server {
     try {
       const result = await joinQueueHandler({
         playerID: req.body.playerID,
+        coveyTownID: req.body.coveyTownID,
+      });
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /**
+   * Help the next student
+   */
+  app.post('/queues/help', BodyParser.json(), async (req, res) => {
+    try {
+      const result = await helpNextStudentHandler({
         coveyTownID: req.body.coveyTownID,
       });
       res.status(StatusCodes.OK).json(result);

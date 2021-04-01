@@ -53,8 +53,8 @@ export default class CoveyTownController {
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
-  /** Admin Player that controls the processing of the Queue */
-  private _adminPlayer: Player | undefined;
+  /** TA Player that controls the processing of the Queue */
+  private _taPlayer: Player | undefined;
 
   /** The list of valid sessions for this town * */
   private _sessions: PlayerSession[] = [];
@@ -73,11 +73,16 @@ export default class CoveyTownController {
 
   private _isPubliclyListed: boolean;
 
-  // returnTo: covy room id
-
   private _queue: Queue;
 
   private _capacity: number;
+
+  private HELPING_LOCATION = {
+    x: 0,
+    y: 0,
+    rotation: 'front' as Direction,
+    moving: false,
+  };
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID();
@@ -89,11 +94,18 @@ export default class CoveyTownController {
     // when the room gets created we add the first user as the admin of the room
   }
 
-  set adminPlayer(adminPlayer: Player) {
-    if (!this._adminPlayer) {
-      this._adminPlayer = adminPlayer;
-      adminPlayer.isTA = true;
+  set taPlayer(taPlayer: Player) {
+    if (!this._taPlayer) {
+      this._taPlayer = taPlayer;
+      taPlayer.isTA = true;
     }
+  }
+
+  get taPlayer(): Player {
+    if (this._taPlayer) {
+      return this._taPlayer;
+    }
+    throw new Error('No TA player!');
   }
 
   /**
@@ -107,7 +119,7 @@ export default class CoveyTownController {
 
     // Set player as adminPlayer if they are the first player joining the room
     if (this._players.length === 0) {
-      this.adminPlayer = newPlayer;
+      this.taPlayer = newPlayer;
     }
 
     this._sessions.push(theSession);
@@ -152,27 +164,23 @@ export default class CoveyTownController {
    * and update to all players with the updated queue
    */
   helpNextStudent(): boolean {
-    // TODO: Figure out where this should go
-    const HELPING_LOCATION = {
-      x: 0,
-      y: 0,
-      rotation: 'front' as Direction,
-      moving: false,
-    };
+    // Check if there is anyone left in the queue
+    if (!this._queue || this._queue.size() === 0) {
+      return false;
+    }
 
     // Get the next player in the queue
     const { player } = this._queue.pop();
 
     // Change the player's and TA's location so they are in the same space
-    // Update the player location
-    player.updateLocation(HELPING_LOCATION);
-    this._listeners.forEach(listener => listener.onPlayerMoved(player));
-
-    // Update the TA's location
+    this.updatePlayerLocation(player, this.HELPING_LOCATION);
+    this.updatePlayerLocation(this.taPlayer, this.HELPING_LOCATION);
 
     // Send out an updated queue to all listeners
+    this._listeners.forEach(listener => listener.onQueueUpdated(this._queue.playerQueue));
 
-    return success;
+    // Return successful update
+    return true;
   }
 
   /**

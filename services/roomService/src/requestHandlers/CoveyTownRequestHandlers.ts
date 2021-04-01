@@ -4,6 +4,7 @@ import { CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
+import { QueueTicket } from '../types/Queue';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -88,11 +89,25 @@ export interface QueueJoinRequest {
 }
 
 /**
+ * Payload sent by the client who is Helping the next student
+ */
+export interface HelpStudentRequest {
+  coveyTownID: string;
+}
+
+/**
  * Payload sent to the client who joins the queue
  * Returns the position that the user is in the queue
  */
 export interface QueueJoinResponse {
   queuePosition: number;
+}
+
+/**
+ * Payload sent to the TA
+ */
+export interface HelpStudentResponse {
+  helped: boolean;
 }
 
 /**
@@ -222,6 +237,31 @@ export async function joinQueueHandler(
   };
 }
 
+export async function helpNextStudentHandler(
+  requestData: HelpStudentRequest,
+): Promise<ResponseEnvelope<HelpStudentResponse>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const coveyTownController = townsStore.getControllerForTown(requestData.coveyTownID);
+  if (!coveyTownController) {
+    return {
+      isOK: false,
+      message: 'Error: No such town',
+      response: {
+        helped: false,
+      },
+    };
+  }
+
+  const success = coveyTownController.helpNextStudent();
+  return {
+    isOK: success,
+    message: !success ? 'Error: Unable to help next student' : 'Next student is being helped!',
+    response: {
+      helped: success,
+    },
+  };
+}
+
 /**
  * An adapter between CoveyTownController's event interface (CoveyTownListener)
  * and the low-level network communication protocol
@@ -243,8 +283,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
       socket.emit('townClosing');
       socket.disconnect(true);
     },
-    // TODO: onRedirectRoom
-    // TODO: onUpdatePlayerPosition
+    onQueueUpdated(queue: QueueTicket[]) {
+      socket.emit('queueUpdate', queue);
+    },
   };
 }
 
