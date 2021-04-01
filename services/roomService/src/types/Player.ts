@@ -41,11 +41,11 @@ export default class Player {
     return this._isTA;
   }
 
-  updateLocation(location: UserLocation): void {
-    this.location = location;
-  }
-
   set isTA(isTA: boolean) {
     this._isTA = isTA;
+  }
+
+  updateLocation(location: UserLocation): void {
+    this.location = location;
   }
 }
