@@ -8,6 +8,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
+import TAControls from './components/TAControls';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
 import { CoveyAppState, NearbyPlayers } from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
@@ -39,7 +40,9 @@ function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
+    queue: [],
     myPlayerID: '',
+    isTA: false,
     currentTownFriendlyName: '',
     currentTownID: '',
     currentTownIsPubliclyListed: false,
@@ -61,7 +64,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentTownID: state.currentTownID,
     currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
     myPlayerID: state.myPlayerID,
+    isTA: state.isTA,
     players: state.players,
+    queue: state.queue,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -102,6 +107,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.emitMovement = update.data.emitMovement;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
+      nextState.isTA = update.data.players.find(player => player.isTA)?.id === nextState.myPlayerID;
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
@@ -224,7 +230,10 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
     }
     return (
       <div>
+        <div style={{ display:'flex', flexDirection: 'row'}}>
+        <TAControls />
         <WorldMap />
+        </div>
         <VideoOverlay preferredMode="fullwidth" />
       </div>
     );

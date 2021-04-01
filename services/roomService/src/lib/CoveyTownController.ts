@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import { Direction, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
@@ -145,6 +145,34 @@ export default class CoveyTownController {
     this._queue.push(player);
 
     return this._queue.getPlayerPosition(player);
+  }
+
+  /**
+   * Helps the next student in the queue and sends out
+   * and update to all players with the updated queue
+   */
+  helpNextStudent(): boolean {
+    // TODO: Figure out where this should go
+    const HELPING_LOCATION = {
+      x: 0,
+      y: 0,
+      rotation: 'front' as Direction,
+      moving: false,
+    };
+
+    // Get the next player in the queue
+    const { player } = this._queue.pop();
+
+    // Change the player's and TA's location so they are in the same space
+    // Update the player location
+    player.updateLocation(HELPING_LOCATION);
+    this._listeners.forEach(listener => listener.onPlayerMoved(player));
+
+    // Update the TA's location
+
+    // Send out an updated queue to all listeners
+
+    return success;
   }
 
   /**
