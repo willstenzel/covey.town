@@ -270,8 +270,8 @@ export async function helpNextStudentHandler(
  */
 function townSocketAdapter(socket: Socket): CoveyTownListener {
   return {
-    onPlayerMoved(movedPlayer: Player) {
-      socket.emit('playerMoved', movedPlayer);
+    onPlayerMoved(movedPlayer: Player, force: boolean) {
+      socket.emit('playerMoved', movedPlayer, force);
     },
     onPlayerDisconnected(removedPlayer: Player) {
       socket.emit('playerDisconnect', removedPlayer);

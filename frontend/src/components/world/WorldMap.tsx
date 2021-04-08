@@ -16,6 +16,8 @@ class CoveyGameScene extends Phaser.Scene {
 
   private players: Player[] = [];
 
+  private myPlayerID: string;
+
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
   /*
@@ -46,6 +48,7 @@ class CoveyGameScene extends Phaser.Scene {
     emitMovement: (loc: UserLocation) => void,
     handleJoinQueue: () => Promise<void>,
     isTA: boolean,
+    myPlayerID: string,
   ) {
     super('PlayGame');
     this.video = video;
@@ -53,6 +56,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.handleJoinQueue = handleJoinQueue;
     this.spacebarPressed = false;
     this.isTA = isTA;
+    this.myPlayerID = myPlayerID;
   }
 
   preload() {
@@ -62,13 +66,13 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
-  updatePlayersLocations(players: Player[]) {
+  updatePlayersLocations(players: Player[], forceTeleport: boolean) {
     if (!this.ready) {
       this.players = players;
       return;
     }
     players.forEach(p => {
-      this.updatePlayerLocation(p);
+      this.updatePlayerLocation(p, forceTeleport);
     });
     // Remove disconnected players from board
     const disconnectedPlayers = this.players.filter(
@@ -88,7 +92,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  updatePlayerLocation(player: Player) {
+  updatePlayerLocation(player: Player, forceTeleport: boolean) {
     let myPlayer = this.players.find(p => p.id === player.id);
     if (!myPlayer) {
       let { location } = player;
@@ -103,6 +107,7 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location, player.isTA);
       this.players.push(myPlayer);
     }
+
     if (this.id !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
@@ -130,6 +135,18 @@ class CoveyGameScene extends Phaser.Scene {
       } else {
         sprite.anims.stop();
         sprite.setTexture('atlas', `misa-${player.location.rotation}`);
+      }
+      
+      // Update the current player's location
+      if (this.myPlayerID === myPlayer.id && forceTeleport) {
+        console.log('FORCE UPDATING PLAYERS POSITION')
+        
+        if (this.player && this.lastLocation && player.location) {
+          this.player.sprite.x = player.location.x;
+          this.player.sprite.y = player.location.y;
+          this.lastLocation.x = player.location.x;
+          this.lastLocation.y = player.location.y;
+        }
       }
     }
   }
@@ -456,7 +473,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      this.players.forEach(p => this.updatePlayerLocation(p));
+      // this.players.forEach(p => this.updatePlayerLocation(p));
     }
   }
 
@@ -475,7 +492,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, players, myPlayerID, currentTownID, apiClient, isTA } = useCoveyAppState();
+  const { emitMovement, forceTeleport, players, myPlayerID, currentTownID, apiClient, isTA } = useCoveyAppState();
   const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
 
@@ -511,7 +528,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue, isTA);
+      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue, isTA, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -528,8 +545,8 @@ export default function WorldMap(): JSX.Element {
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
-    gameScene?.updatePlayersLocations(players);
-  }, [players, deepPlayers, gameScene]);
+    gameScene?.updatePlayersLocations(players, forceTeleport);
+  }, [players, forceTeleport, deepPlayers, gameScene]);
 
   return <div id='map-container' />;
 }

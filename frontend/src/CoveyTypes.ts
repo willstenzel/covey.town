@@ -26,6 +26,7 @@ export type CoveyAppState = {
   isTA: boolean,
   players: Player[],
   queue: QueueTicket[],
+  forceTeleport: boolean,
   currentLocation: UserLocation,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,

@@ -14,8 +14,9 @@ export default interface CoveyTownListener {
   /**
    * Called when a player's location changes
    * @param movedPlayer the player that moved
+   * @param force wether or not this action should override the current players location
    */
-  onPlayerMoved(movedPlayer: Player): void;
+  onPlayerMoved(movedPlayer: Player, force: boolean): void;
 
   /**
    * Called when a player disconnects from the town

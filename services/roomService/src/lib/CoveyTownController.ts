@@ -78,8 +78,8 @@ export default class CoveyTownController {
   private _capacity: number;
 
   private HELPING_LOCATION = {
-    x: 0,
-    y: 0,
+    x: 200,
+    y: 200,
     rotation: 'front' as Direction,
     moving: false,
   };
@@ -173,8 +173,8 @@ export default class CoveyTownController {
     const { player } = this._queue.pop();
 
     // Change the player's and TA's location so they are in the same space
-    this.updatePlayerLocation(player, this.HELPING_LOCATION);
-    this.updatePlayerLocation(this.taPlayer, this.HELPING_LOCATION);
+    this.updatePlayerLocation(player, this.HELPING_LOCATION, true);
+    this.updatePlayerLocation(this.taPlayer, this.HELPING_LOCATION, true);
 
     // Send out an updated queue to all listeners
     this._listeners.forEach(listener => listener.onQueueUpdated(this._queue.playerQueue));
@@ -199,9 +199,9 @@ export default class CoveyTownController {
    * @param player Player to update location for
    * @param location New location for this player
    */
-  updatePlayerLocation(player: Player, location: UserLocation): void {
+  updatePlayerLocation(player: Player, location: UserLocation, force = false): void {
     player.updateLocation(location);
-    this._listeners.forEach(listener => listener.onPlayerMoved(player));
+    this._listeners.forEach(listener => listener.onPlayerMoved(player, force));
   }
 
   /**

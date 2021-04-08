@@ -31,7 +31,7 @@ import { QueueTicket } from './classes/Queue';
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
-  | { action: 'playerMoved'; player: Player }
+  | { action: 'playerMoved'; player: Player, forceTeleport: boolean }
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
@@ -43,6 +43,7 @@ function defaultAppState(): CoveyAppState {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     queue: [],
+    forceTeleport: false,
     myPlayerID: '',
     isTA: false,
     currentTownFriendlyName: '',
@@ -69,6 +70,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     isTA: state.isTA,
     players: state.players,
     queue: state.queue,
+    forceTeleport: state.forceTeleport,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -121,6 +123,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       } else {
         nextState.players = nextState.players.concat([update.player]);
       }
+      nextState.forceTeleport = update.forceTeleport;
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
@@ -178,9 +181,13 @@ async function GameController(initData: TownJoinResponse,
       player: Player.fromServerPlayer(player),
     });
   });
-  socket.on('playerMoved', (player: ServerPlayer) => {
-    if (player._id !== gamePlayerID) {
-      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player) });
+  // create a new event that is called transport the fires a new player moved dispatchAppUpdate
+  socket.on('playerMoved', (player: ServerPlayer, force: boolean) => {
+    if (force) {
+      console.log('playerMovedTriggered', player, force)
+    }
+    if (player._id !== gamePlayerID || force) {
+      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player), forceTeleport: force });
     }
   });
   socket.on('playerDisconnect', (player: ServerPlayer) => {
