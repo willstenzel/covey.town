@@ -153,7 +153,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       return defaultAppState();
     case 'queueUpdate':
       nextState.queue = update.queue;
-      console.log(`Next State's Queue: ${nextState.queue}`)
+      console.log(`Next Queue State: ${nextState.queue}`)
       break;
     default:
       throw new Error('Unexpected state request');
@@ -200,6 +200,9 @@ async function GameController(initData: TownJoinResponse,
     socket.emit('playerMovement', location);
     dispatchAppUpdate({ action: 'weMoved', location });
   };
+  socket.on('queueUpdate', (queue: QueueTicket[]) => {
+    dispatchAppUpdate({ action: 'queueUpdate', queue })
+  })
 
   dispatchAppUpdate({
     action: 'doConnect',

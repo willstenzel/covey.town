@@ -151,6 +151,22 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
+  updateQueue(queuePosition: number) {
+    console.log('1. THIS CODE HAS BEEN REACHED')
+    console.log(this.player)
+    if (this.player) {
+      console.log('2. THIS CODE HAS BEEN REACHED')
+      const sprite = this.player?.sprite
+      const label = this.add.text(sprite.x, sprite.y - 20, `${this.isTA ? 'TA ' : `#${queuePosition} `}(You)`, {
+        font: '18px monospace',
+        color: '#000000',
+        // padding: {x: 20, y: 10},
+        backgroundColor: '#ffffff',
+      });
+      this.player.label = label
+    }
+  }
+
   getNewMovementDirection() {
     if (this.cursors.find(keySet => keySet.left?.isDown)) {
       return 'left';
@@ -473,7 +489,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      // this.players.forEach(p => this.updatePlayerLocation(p));
+      this.players.forEach(p => this.updatePlayerLocation(p, false));
     }
   }
 
@@ -492,7 +508,7 @@ class CoveyGameScene extends Phaser.Scene {
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, forceTeleport, players, myPlayerID, currentTownID, apiClient, isTA } = useCoveyAppState();
+  const { emitMovement, forceTeleport, players, myPlayerID, currentTownID, apiClient, isTA, queue } = useCoveyAppState();
   const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
 
@@ -547,6 +563,10 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     gameScene?.updatePlayersLocations(players, forceTeleport);
   }, [players, forceTeleport, deepPlayers, gameScene]);
+  useEffect(() => {
+    const queuePosition = queue.findIndex(queuePos => queuePos.player.id === myPlayerID)
+    gameScene?.updateQueue(queuePosition);
+  }, [queue]);
 
   return <div id='map-container' />;
 }
