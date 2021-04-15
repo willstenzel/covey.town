@@ -156,6 +156,9 @@ export default class CoveyTownController {
     // Add the player to the queue
     this._queue.push(player);
 
+    // Send out an updated queue to all listeners
+    this._listeners.forEach(listener => listener.onQueueUpdated(this._queue.playerQueue));
+
     return this._queue.getPlayerPosition(player);
   }
 

@@ -153,7 +153,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       return defaultAppState();
     case 'queueUpdate':
       nextState.queue = update.queue;
-      console.log(`Next Queue State: ${nextState.queue}`)
       break;
     default:
       throw new Error('Unexpected state request');

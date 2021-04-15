@@ -1,7 +1,7 @@
 export default class Player {
   public location?: UserLocation;
 
-  private readonly _id: string;
+  public _id: string;
 
   private readonly _userName: string;
 

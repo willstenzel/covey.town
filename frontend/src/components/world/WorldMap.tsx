@@ -152,12 +152,9 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   updateQueue(queuePosition: number) {
-    console.log('1. THIS CODE HAS BEEN REACHED')
-    console.log(this.player)
     if (this.player) {
-      console.log('2. THIS CODE HAS BEEN REACHED')
       const sprite = this.player?.sprite
-      const label = this.add.text(sprite.x, sprite.y - 20, `${this.isTA ? 'TA ' : `#${queuePosition} `}(You)`, {
+      const label = this.add.text(sprite.x, sprite.y - 20, `${this.isTA ? 'TA ' : ''}${queuePosition === -1 ? '' : `#${queuePosition + 1} `}(You)`, {
         font: '18px monospace',
         color: '#000000',
         // padding: {x: 20, y: 10},
@@ -564,7 +561,7 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players, forceTeleport);
   }, [players, forceTeleport, deepPlayers, gameScene]);
   useEffect(() => {
-    const queuePosition = queue.findIndex(queuePos => queuePos.player.id === myPlayerID)
+    const queuePosition = queue.findIndex(queuePos => queuePos.player._id === myPlayerID)
     gameScene?.updateQueue(queuePosition);
   }, [queue]);
 
