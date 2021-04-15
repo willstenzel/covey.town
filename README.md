@@ -12,13 +12,13 @@ The frontend implements video chat using the [Twilio Programmable Video](https:/
 
 A backend service (in the `services/roomService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
 
-![Covey.Town: Office Hours Architecture](docs/Project Plan.png)
+![Covey.Town: Office Hours Architecture](docs/office-hours-architecture.png)
 
-The figure above depicts the feature changes made to the original architecture to support Office Hours.
+The figure above depicts the feature changes made to the original architecture to support Office Hours. Read more about the design [here](DESIGN.md).
 
 ## Running this app locally
 
-Running the application locally entails running both the backend service and a frontend.
+Running the application locally entails running both the backend service and a frontend. The process for running Covey.Town: Office Hours is the same as running the original Covey.Town app. You can access and clone our repository [here](https://github.com/willstenzel/covey.town).
 
 ### Setting up the backend
 
