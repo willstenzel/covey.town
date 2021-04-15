@@ -18,7 +18,7 @@ The figure above depicts the feature changes made to the original architecture t
 
 ## Running this app locally
 
-Running the application locally entails running both the backend service and a frontend. The process for running Covey.Town: Office Hours is the same as running the original Covey.Town app.
+Running the application locally entails running both the backend service and a frontend. The process for running Covey.Town: Office Hours is the same as running the original Covey.Town app. You can access and clone our repository [here](https://github.com/willstenzel/covey.town).
 
 ### Setting up the backend
 
