@@ -85,8 +85,8 @@
                  "type":"",
                  "visible":true,
                  "width":140.941882342144,
-                 "x":920.538364237011,
-                 "y":156.99207341004
+                 "x":910.54,
+                 "y":90.99
                 }, 
                 {
                  "height":64.5949720670387,
@@ -112,14 +112,16 @@
                  "rotation":0,
                  "text":
                     {
-                     "text":"Press space to join queue",
+                     "halign":"center",
+                     "text":"   Queue Machine \nPress space to join",
+                     "valign":"center",
                      "wrap":true
                     },
                  "type":"",
                  "visible":true,
                  "width":140.942,
-                 "x":540.607919831302,
-                 "y":846.080337492873
+                 "x":530.61,
+                 "y":811.858292128767
                 }],
          "opacity":1,
          "type":"objectgroup",
