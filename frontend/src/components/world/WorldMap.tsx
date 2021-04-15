@@ -142,7 +142,6 @@ class CoveyGameScene extends Phaser.Scene {
         if (this.player && this.lastLocation && player.location) {
           this.player.sprite.setX(player.location.x);
           this.player.sprite.setY(player.location.y);
-
           this.lastLocation.x = player.location.x;
           this.lastLocation.y = player.location.y;
         }
@@ -503,12 +502,19 @@ export default function WorldMap(): JSX.Element {
 
   const handleJoinQueue = async () => {
     try {
-      const res = await apiClient.joinQueue({ playerID: myPlayerID, coveyTownID: currentTownID });
-      toast({
-        title: 'Queue Join Sucessful!',
-        description: `You are in ${res.queuePosition} position in the queue`,
-        status: 'success',
-      });
+      if (!isTA){
+        const res = await apiClient.joinQueue({ playerID: myPlayerID, coveyTownID: currentTownID });
+        toast({
+          title: 'Queue Join Sucessful!',
+          description: `You are in ${res.queuePosition} position in the queue`,
+          status: 'success',
+        });
+      } else {
+        toast({
+          title: 'TAs can\'t join the queue',
+          status: 'warning',
+        });
+      }
     } catch (e) {
       toast({
         title: 'Error joining the queue',

@@ -5,9 +5,7 @@ import useCoveyAppState from "../hooks/useCoveyAppState";
 export default function TAControls(): JSX.Element {
     const [isHelpingStudent, setIsHelpingStudent] = useState<boolean>(false);
     const toast = useToast();
-
-    // const { emitMovement, players, myPlayerID, currentTownID, apiClient } = useCoveyAppState();
-    const { currentTownID, apiClient } = useCoveyAppState();
+    const { currentTownID, apiClient, isTA } = useCoveyAppState();
 
     const helpNextStudent = async () => {
         if (isHelpingStudent) {
@@ -22,15 +20,10 @@ export default function TAControls(): JSX.Element {
         // Help the next student
         await apiClient.helpNextStudent({ coveyTownID: currentTownID });
     }
-
-    // const finishHelping = async () => {
-    //     // Some stuff
-
-    //     // Then
-    //     setIsHelpingStudent(false);
-    // }
-
-    return (
-        <Button style={{position: 'absolute', float: 'right', margin: '16px'}} colorScheme="blue" onClick={helpNextStudent}>Help Student</Button>
+    if(isTA) {
+        return (
+            <Button style={{position: 'absolute', marginTop: '16px', marginLeft: '70%'}} colorScheme="blue" onClick={helpNextStudent}>Help Student</Button>
         );
+    } 
+    return (<></>);
 }

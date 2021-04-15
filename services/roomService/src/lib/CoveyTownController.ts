@@ -78,7 +78,7 @@ export default class CoveyTownController {
   private _capacity: number;
 
   private HELPING_LOCATION = {
-    x: 200,
+    x: 1100,
     y: 200,
     rotation: 'front' as Direction,
     moving: false,
