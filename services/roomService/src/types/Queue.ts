@@ -52,10 +52,9 @@ export default class Queue {
 
   /** Gets the Queue position of the given player */
   getPlayerPosition(player: Player): number {
-    for (const queueTicket of this._playerQueue) {
-      if (player.id === queueTicket.player.id) {
-        return this._playerQueue.indexOf(queueTicket) + 1;
-      }
+    const index = this._playerQueue.findIndex(queueTicket => player.id === queueTicket.player.id);
+    if (index !== -1) {
+      return index + 1;
     }
     throw new Error('The given player is not in the Queue!');
   }
@@ -63,7 +62,7 @@ export default class Queue {
   /** Checks if a given player is in the queue */
   isPlayerInQueue(player: Player): boolean {
     try {
-      const position = this.getPlayerPosition(player);
+      this.getPlayerPosition(player);
       return true;
     } catch (e) {
       return false;

@@ -14,7 +14,6 @@ const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
  * can occur (e.g. joining a town, moving, leaving a town)
  */
 export default class CoveyTownController {
-
   get capacity(): number {
     return this._capacity;
   }
@@ -98,7 +97,6 @@ export default class CoveyTownController {
   set taPlayer(taPlayer: Player) {
     if (!this._taPlayer) {
       this._taPlayer = taPlayer;
-      taPlayer.isTA = true;
     }
   }
 
@@ -121,6 +119,7 @@ export default class CoveyTownController {
     // Set player as adminPlayer if they are the first player joining the room
     if (this._players.length === 0) {
       this.taPlayer = newPlayer;
+      this.taPlayer.isTA = true;
     }
 
     this._sessions.push(theSession);
