@@ -1,6 +1,6 @@
 import { useToast } from '@chakra-ui/react';
 import Phaser from 'phaser';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Player, { UserLocation } from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
@@ -378,7 +378,7 @@ class CoveyGameScene extends Phaser.Scene {
     /* Handle joining of the queue when a player goes to the queue machine
     and presses the sapce bar 
     */
-    this.physics.add.overlap(sprite, queueMachines, async (overlappingObject, queueMachine) => {
+    this.physics.add.overlap(sprite, queueMachines, async () => {
       if (cursorKeys.space.isDown && this.player && !this.spacebarPressed) {
         this.spacebarPressed = true;
         await this.handleJoinQueue();
@@ -510,7 +510,7 @@ export default function WorldMap(): JSX.Element {
   const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
 
-  const handleJoinQueue = async () => {
+  const handleJoinQueue = useCallback(async () => {
     try {
       if (!isTA) {
         const res = await apiClient.joinQueue({ playerID: myPlayerID, coveyTownID: currentTownID });
@@ -531,7 +531,7 @@ export default function WorldMap(): JSX.Element {
         status: 'error',
       });
     }
-  };
+  }, [apiClient, currentTownID, isTA, myPlayerID, toast]);
 
   useEffect(() => {
     const config = {
@@ -568,7 +568,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, myPlayerID]);
+  }, [video, emitMovement, isTA, handleJoinQueue, myPlayerID]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
@@ -577,7 +577,7 @@ export default function WorldMap(): JSX.Element {
   useEffect(() => {
     const queuePosition = queue.findIndex(queuePos => queuePos.player._id === myPlayerID);
     gameScene?.updateQueuePosition(queuePosition);
-  }, [queue]);
+  }, [queue, gameScene, myPlayerID]);
 
   return <div id='map-container' />;
 }
