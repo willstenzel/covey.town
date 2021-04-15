@@ -12,7 +12,7 @@ class CoveyGameScene extends Phaser.Scene {
     label: Phaser.GameObjects.Text;
   };
 
-  private id?: string;
+  private myPlayerID: string;
 
   private players: Player[] = [];
 
@@ -107,8 +107,7 @@ class CoveyGameScene extends Phaser.Scene {
       myPlayer = new Player(player.id, player.userName, location, player.isTA);
       this.players.push(myPlayer);
     }
-
-    if (this.id !== myPlayer.id && this.physics && player.location) {
+    if (this.myPlayerID !== myPlayer.id && this.physics && player.location) {
       let { sprite } = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
@@ -136,22 +135,23 @@ class CoveyGameScene extends Phaser.Scene {
         sprite.anims.stop();
         sprite.setTexture('atlas', `misa-${player.location.rotation}`);
       }
-      
-      // Update the current player's location
-      if (this.myPlayerID === myPlayer.id && this.myPlayerID === forceTeleport) {
-        if (this.player && this.lastLocation && player.location) {
-          this.player.sprite.setX(player.location.x);
-          this.player.sprite.setY(player.location.y);
-          this.lastLocation.x = player.location.x;
-          this.lastLocation.y = player.location.y;
-        }
+    }
+    // Update the current player's location
+    if (this.myPlayerID === myPlayer.id && this.myPlayerID === forceTeleport) {
+      if (this.player && this.lastLocation && player.location) {
+        this.player.sprite.setX(player.location.x);
+        this.player.sprite.setY(player.location.y);
+        this.lastLocation.x = player.location.x;
+        this.lastLocation.y = player.location.y;
       }
     }
   }
 
   updateQueuePosition(queuePosition: number) {
     if (this.player) {
-      this.player.label.setText(`${this.isTA ? 'TA ' : ''}${queuePosition === -1 ? '' : `#${queuePosition + 1} `}(You)`);
+      this.player.label.setText(
+        `${this.isTA ? 'TA ' : ''}${queuePosition === -1 ? '' : `#${queuePosition + 1} `}(You)`,
+      );
     }
   }
 
@@ -225,7 +225,7 @@ class CoveyGameScene extends Phaser.Scene {
         !this.lastLocation ||
         this.lastLocation.x !== body.x ||
         this.lastLocation.y !== body.y ||
-        this.lastLocation.rotation !== primaryDirection ||
+        (isMoving && this.lastLocation.rotation !== primaryDirection) ||
         this.lastLocation.moving !== isMoving
       ) {
         if (!this.lastLocation) {
@@ -489,20 +489,32 @@ class CoveyGameScene extends Phaser.Scene {
 
   resume() {
     this.paused = false;
-    this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    if (Video.instance()) {
+      // If the game is also in process of being torn down, the keyboard could be undefined
+      this.input.keyboard.addCapture(this.previouslyCapturedKeys);
+    }
     this.previouslyCapturedKeys = [];
   }
 }
 
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
-  const { emitMovement, forceTeleport, players, myPlayerID, currentTownID, apiClient, isTA, queue } = useCoveyAppState();
+  const {
+    emitMovement,
+    forceTeleport,
+    players,
+    myPlayerID,
+    currentTownID,
+    apiClient,
+    isTA,
+    queue,
+  } = useCoveyAppState();
   const toast = useToast();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
 
   const handleJoinQueue = async () => {
     try {
-      if (!isTA){
+      if (!isTA) {
         const res = await apiClient.joinQueue({ playerID: myPlayerID, coveyTownID: currentTownID });
         toast({
           title: 'Queue Join Sucessful!',
@@ -511,7 +523,7 @@ export default function WorldMap(): JSX.Element {
         });
       } else {
         toast({
-          title: 'TAs can\'t join the queue',
+          title: "TAs can't join the queue",
           status: 'warning',
         });
       }
@@ -539,7 +551,13 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, handleJoinQueue, isTA, myPlayerID);
+      const newGameScene = new CoveyGameScene(
+        video,
+        emitMovement,
+        handleJoinQueue,
+        isTA,
+        myPlayerID,
+      );
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -552,14 +570,14 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement]);
+  }, [video, emitMovement, myPlayerID]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
     gameScene?.updatePlayersLocations(players, forceTeleport);
   }, [players, forceTeleport, deepPlayers, gameScene]);
   useEffect(() => {
-    const queuePosition = queue.findIndex(queuePos => queuePos.player._id === myPlayerID)
+    const queuePosition = queue.findIndex(queuePos => queuePos.player._id === myPlayerID);
     gameScene?.updateQueuePosition(queuePosition);
   }, [queue]);
 
