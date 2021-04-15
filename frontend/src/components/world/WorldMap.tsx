@@ -16,8 +16,6 @@ class CoveyGameScene extends Phaser.Scene {
 
   private players: Player[] = [];
 
-  private myPlayerID: string;
-
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys[] = [];
 
   /*
