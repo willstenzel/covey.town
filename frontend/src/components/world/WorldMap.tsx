@@ -66,7 +66,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
   }
 
-  updatePlayersLocations(players: Player[], forceTeleport: boolean) {
+  updatePlayersLocations(players: Player[], forceTeleport: string) {
     if (!this.ready) {
       this.players = players;
       return;
@@ -92,7 +92,7 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  updatePlayerLocation(player: Player, forceTeleport: boolean) {
+  updatePlayerLocation(player: Player, forceTeleport?: string) {
     let myPlayer = this.players.find(p => p.id === player.id);
     if (!myPlayer) {
       let { location } = player;
@@ -138,12 +138,11 @@ class CoveyGameScene extends Phaser.Scene {
       }
       
       // Update the current player's location
-      if (this.myPlayerID === myPlayer.id && forceTeleport) {
-        console.log('FORCE UPDATING PLAYERS POSITION')
-        
+      if (this.myPlayerID === myPlayer.id && this.myPlayerID === forceTeleport) {
         if (this.player && this.lastLocation && player.location) {
-          this.player.sprite.x = player.location.x;
-          this.player.sprite.y = player.location.y;
+          this.player.sprite.setX(player.location.x);
+          this.player.sprite.setY(player.location.y);
+
           this.lastLocation.x = player.location.x;
           this.lastLocation.y = player.location.y;
         }
@@ -151,16 +150,9 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  updateQueue(queuePosition: number) {
+  updateQueuePosition(queuePosition: number) {
     if (this.player) {
-      const sprite = this.player?.sprite
-      const label = this.add.text(sprite.x, sprite.y - 20, `${this.isTA ? 'TA ' : ''}${queuePosition === -1 ? '' : `#${queuePosition + 1} `}(You)`, {
-        font: '18px monospace',
-        color: '#000000',
-        // padding: {x: 20, y: 10},
-        backgroundColor: '#ffffff',
-      });
-      this.player.label = label
+      this.player.label.setText(`${this.isTA ? 'TA ' : ''}${queuePosition === -1 ? '' : `#${queuePosition + 1} `}(You)`);
     }
   }
 
@@ -486,7 +478,7 @@ class CoveyGameScene extends Phaser.Scene {
     if (this.players.length) {
       // Some players got added to the queue before we were ready, make sure that they have
       // sprites....
-      this.players.forEach(p => this.updatePlayerLocation(p, false));
+      this.players.forEach(p => this.updatePlayerLocation(p));
     }
   }
 
@@ -562,7 +554,7 @@ export default function WorldMap(): JSX.Element {
   }, [players, forceTeleport, deepPlayers, gameScene]);
   useEffect(() => {
     const queuePosition = queue.findIndex(queuePos => queuePos.player._id === myPlayerID)
-    gameScene?.updateQueue(queuePosition);
+    gameScene?.updateQueuePosition(queuePosition);
   }, [queue]);
 
   return <div id='map-container' />;

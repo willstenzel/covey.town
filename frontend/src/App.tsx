@@ -31,7 +31,7 @@ import { QueueTicket } from './classes/Queue';
 type CoveyAppUpdate =
   | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string,townIsPubliclyListed:boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
   | { action: 'addPlayer'; player: Player }
-  | { action: 'playerMoved'; player: Player, forceTeleport: boolean }
+  | { action: 'playerMoved'; player: Player, forceTeleport: string }
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
   | { action: 'disconnect' }
@@ -43,7 +43,7 @@ function defaultAppState(): CoveyAppState {
     nearbyPlayers: { nearbyPlayers: [] },
     players: [],
     queue: [],
-    forceTeleport: false,
+    forceTeleport: '',
     myPlayerID: '',
     isTA: false,
     currentTownFriendlyName: '',
@@ -181,12 +181,9 @@ async function GameController(initData: TownJoinResponse,
     });
   });
   // create a new event that is called transport the fires a new player moved dispatchAppUpdate
-  socket.on('playerMoved', (player: ServerPlayer, force: boolean) => {
-    if (force) {
-      console.log('playerMovedTriggered', player, force)
-    }
+  socket.on('playerMoved', (player: ServerPlayer, force: string) => {
     if (player._id !== gamePlayerID || force) {
-      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player), forceTeleport: force });
+      dispatchAppUpdate({ action: 'playerMoved', player: Player.fromServerPlayer(player), forceTeleport: player._id });
     }
   });
   socket.on('playerDisconnect', (player: ServerPlayer) => {
