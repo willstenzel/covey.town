@@ -8,7 +8,7 @@
 
 #### Changes to the backend   
 ###### Adding a Queue functionality for students
-Queue: 
+Queue:      
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/CRCCards/QueueCRC.png)
 
 QueueTicket: 
