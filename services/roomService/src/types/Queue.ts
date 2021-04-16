@@ -44,10 +44,24 @@ export default class Queue {
   }
 
   /**
+   * Remove player from queue
+   */
+  remove(playerID: string): void {
+    this.playerQueue = this.playerQueue.filter(q => q.player.id !== playerID);
+  }
+
+  /**
    * Get a copy of the player queue
    */
   get playerQueue(): QueueTicket[] {
     return this._playerQueue.slice();
+  }
+
+  /**
+   * Set a player queue
+   */
+  set playerQueue(queue: QueueTicket[]) {
+    this._playerQueue = queue;
   }
 
   /** Gets the Queue position of the given player */

@@ -163,6 +163,19 @@ export default class CoveyTownController {
   }
 
   /**
+   * Removes a player from the current Covey Town queue and returns
+   *
+   * @param  playerID The ID of the new player being removed from the queue
+   */
+  removePlayerFromQueue(playerID: string): void {
+    // Filter the player from the queue
+    this._queue.remove(playerID);
+
+    // Send out an updated queue to all listeners
+    this._listeners.forEach(listener => listener.onQueueUpdated(this._queue.playerQueue));
+  }
+
+  /**
    * Helps the next student in the queue and sends out
    * and update to all players with the updated queue
    */
@@ -192,6 +205,7 @@ export default class CoveyTownController {
    * @param session PlayerSession to destroy
    */
   destroySession(session: PlayerSession): void {
+    this.removePlayerFromQueue(session.player.id);
     this._players = this._players.filter(p => p.id !== session.player.id);
     this._sessions = this._sessions.filter(s => s.sessionToken !== session.sessionToken);
     this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
