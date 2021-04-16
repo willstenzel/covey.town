@@ -11,7 +11,7 @@ export default function TAControls(): JSX.Element {
     }
     if(isTA) {
         return (
-            <Button style={{position: 'absolute', marginTop: '16px', marginLeft: '70%'}} colorScheme="blue" onClick={helpNextStudent}>Help Student</Button>
+            <Button style={{position: 'absolute', marginTop: '94px', marginLeft: '16px'}} colorScheme="blue" onClick={helpNextStudent}>Help Student</Button>
         );
     } 
     return (<></>);
