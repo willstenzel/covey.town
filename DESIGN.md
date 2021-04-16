@@ -4,7 +4,9 @@
 ###### Adding additional controls for TA
 
 ###### Adding functionality for a queue machine
-
+The queue machine is a new Phaser object and is identified by its type QueueMachine, similar to how transporters are identified. The player     
+can interact with the queue machine by standing near it and pressing the space key, similar to the transporters. The player will then be     
+notified of their position in the queue and have their position in the queue displayed next to their name.
 
 #### Changes to the backend   
 ###### Adding a Queue functionality for students
@@ -27,3 +29,7 @@ to distinguish them from movement updates that are considered old and would othe
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/office-hours-architecture.png)
 
 ###### Adding a functionality that distinguishes TAs from students
+The player class has also been modified to have a new private boolean variable isTA, which is used to differentiate between TAs and Students.    
+This field is set to true to indicate a Player that is a TA and the Player that created the room is designated as the TA in our implementation.  
+The TA will have additional features and restrictions. The TA will have access to a help student button, which is used to transport the next    
+studentin the queue and the TA to a private space. The TA is also unable to join the queue using the queue machine.
