@@ -1,6 +1,12 @@
 import assert from 'assert';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { UserLocation } from '../CoveyTypes';
+import {
+  HelpStudentRequest,
+  HelpStudentResponse,
+  QueueJoinRequest,
+  QueueJoinResponse,
+} from '../requestHandlers/CoveyTownRequestHandlers';
 
 export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
@@ -152,6 +158,22 @@ export default class TownsServiceClient {
 
   async joinTown(requestData: TownJoinRequest): Promise<TownJoinResponse> {
     const responseWrapper = await this._axios.post('/sessions', requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async joinQueue(requestJoinQueue: QueueJoinRequest): Promise<QueueJoinResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<QueueJoinResponse>>(
+      '/queues',
+      requestJoinQueue,
+    );
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async helpNextStudent(requestData: HelpStudentRequest): Promise<HelpStudentResponse> {
+    const responseWrapper = await this._axios.post<ResponseEnvelope<HelpStudentResponse>>(
+      '/queues/help',
+      requestData,
+    );
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 }
