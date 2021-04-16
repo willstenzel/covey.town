@@ -1,13 +1,22 @@
 import React from "react";
-import { Button } from "@chakra-ui/react"
+import { Button, useToast } from "@chakra-ui/react"
 import useCoveyAppState from "../hooks/useCoveyAppState";
 
 export default function TAControls(): JSX.Element {
     const { currentTownID, apiClient, isTA } = useCoveyAppState();
+    const toast = useToast();
 
     const helpNextStudent = async () => {
         // Help the next student
-        await apiClient.helpNextStudent({ coveyTownID: currentTownID });
+        try {
+            await apiClient.helpNextStudent({ coveyTownID: currentTownID });
+        } catch (e) {
+            toast({
+                title: 'No students to help',
+                description: 'There are no students in the queue!',
+                status: 'warning',
+              });
+        }
     }
     if(isTA) {
         return (
