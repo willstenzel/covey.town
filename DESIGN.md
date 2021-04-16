@@ -1,15 +1,15 @@
-### Design Changes     
+## Design Changes     
 
-#### Changes to the frontend    
-###### Adding additional controls for TA
+### Changes to the frontend    
+##### Adding additional controls for TA
 
-###### Adding functionality for a queue machine
+##### Adding functionality for a queue machine
 The queue machine is a new Phaser object and is identified by its type QueueMachine, similar to how transporters are identified. The player     
 can interact with the queue machine by standing near it and pressing the space key, similar to the transporters. The player will then be     
 notified of their position in the queue and have their position in the queue displayed next to their name.
 
-#### Changes to the backend   
-###### Adding a Queue functionality for students
+### Changes to the backend   
+##### Adding a Queue functionality for students
 A Queue Class was made that is used to store students requests to join the queue when they interact with a queue machine.     
 Queue:      
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/CRCCards/QueueCRC.png)
@@ -29,7 +29,7 @@ The diagram below depicts the changes made.
 
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/office-hours-architecture.png)
 
-###### Adding a functionality that distinguishes TAs from students 
+##### Adding a functionality that distinguishes TAs from students 
 The player class has also been modified to have a new private boolean variable isTA, which is used to differentiate between TAs        
 and Students. This field is set to true to indicate a Player that is a TA and the Player that created the room is designated      
 as the TA in our implementation. The TA will have additional features and restrictions. The TA will have access to a help       
