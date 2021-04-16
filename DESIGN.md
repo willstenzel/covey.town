@@ -22,6 +22,8 @@ to help the next student in the queue. Consequently, there are also new handlers
 The CoveyTownController will also have two new functions called by the handlers to allow a student to be added to the queue and to help the 
 next student in the queue. Since, helping the next student also involves moving them to the designated location, the updatePlayerLocation      
 function had to be modified to achieve this goal. An additional argument, force is used to mark movement updates that are teleportation    
-to distinguish them from movement updates that are considered old and would otherwise be ignored.
+to distinguish them from movement updates that are considered old and would otherwise be ignored. The diagram below depicts the changes made.     
+
+![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/office-hours-architecture.png)
 
 ###### Adding a functionality that distinguishes TAs from students
