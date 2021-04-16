@@ -89,6 +89,9 @@ function wrappedTownSelection() {
     currentTownFriendlyName: '',
     sessionToken: '',
     userName: '',
+    isTA: false,
+    queue: [],
+    forceTeleport: '',
     socket: null,
     currentLocation: {
       x: 0,

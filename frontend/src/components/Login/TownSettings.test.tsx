@@ -43,6 +43,9 @@ function wrappedTownSettings() {
     currentTownIsPubliclyListed: false,
     sessionToken: '',
     userName: '',
+    isTA: false,
+    queue: [],
+    forceTeleport: '',
     socket: null,
     currentLocation: {
       x: 0,
