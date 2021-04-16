@@ -2,11 +2,14 @@
 
 ### Changes to the frontend    
 ##### Adding additional controls for TA
+The Player that is designated as a TA will have additional controls, through the component TAControls.tsx.
+TAControls:
+
 
 ##### Adding functionality for a queue machine
 The queue machine is a new Phaser object and is identified by its type QueueMachine, similar to how transporters are identified. The player     
 can interact with the queue machine by standing near it and pressing the space key, similar to the transporters. The player will then be     
-notified of their position in the queue and have their position in the queue displayed next to their name.
+notified of their position in the queue and have their position in the queue displayed next to their name. 
 
 ### Changes to the backend   
 ##### Adding a Queue functionality for students
