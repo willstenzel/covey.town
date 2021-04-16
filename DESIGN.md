@@ -14,7 +14,7 @@ A Queue Class was made that is used to store students requests to join the queue
 Queue:      
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/CRCCards/QueueCRC.png)
 
-QueueTicket: 
+QueueTicket:        
 ![alt text](https://github.com/willstenzel/covey.town/blob/master/docs/CRCCards/QueueTicketCRC.png)
 
 The queue can be interacted with from the front end through the use of the API cllients, similar to all the other functioanlities  
