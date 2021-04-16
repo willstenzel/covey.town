@@ -218,7 +218,7 @@ describe('TownServiceApiSocket', () => {
     await Promise.all([socketDisconnected, disconnectPromise2]);
   });
 
-  it('Informs all players when a new player joins the queue', async () => {
+  it('Informs all players of queue update when a new player joins the queue', async () => {
     const town = await createTownForTesting();
     const joinData = await apiClient.joinTown({
       coveyTownID: town.coveyTownID,
@@ -240,5 +240,34 @@ describe('TownServiceApiSocket', () => {
     await Promise.all([socketConnected, connectPromise2]);
     await apiClient.joinQueue({ playerID: joinData.coveyUserID, coveyTownID: town.coveyTownID });
     await Promise.all([queueUpdated, queueUpdated2]);
+  });
+  it('Informs all players of updated queue when a player disconnects', async () => {
+    const town = await createTownForTesting();
+    const joinData = await apiClient.joinTown({
+      coveyTownID: town.coveyTownID,
+      userName: nanoid(),
+    });
+
+    const { socket, socketConnected, socketDisconnected } = TestUtils.createSocketClient(
+      server,
+      joinData.coveySessionToken,
+      town.coveyTownID,
+    );
+
+    await socketConnected;
+    await apiClient.joinQueue({ playerID: joinData.coveyUserID, coveyTownID: town.coveyTownID });
+
+    const joinData2 = await apiClient.joinTown({
+      coveyTownID: town.coveyTownID,
+      userName: nanoid(),
+    });
+    const {
+      socketConnected: connectPromise2,
+      queueUpdate: queueUpdated,
+    } = TestUtils.createSocketClient(server, joinData2.coveySessionToken, town.coveyTownID);
+    await connectPromise2;
+    socket.close();
+    await socketDisconnected;
+    await queueUpdated;
   });
 });
